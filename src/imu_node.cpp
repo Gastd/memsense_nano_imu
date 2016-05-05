@@ -38,9 +38,6 @@ void sig_handler(int sig);
 
 int main(int argc, char** argv)
 {
-    int imu_new;
-    // Initial messages
-    // GPS_IMU("Outdoor robot localization system");
     ros::init(argc, argv, "imu_node");
     
     ros::NodeHandle n;
@@ -59,22 +56,13 @@ int main(int argc, char** argv)
     if(!init_all())
         return 1;
     
-    // timer_start();
-    
-    // Print out running time and update MAT file every second
     while(ros::ok())
     {   
-        // usleep(1000000);
-        printf("IMU\n");
-        imu_new = imu_get_data(&imu_values);
+        imu_get_data(&imu_values);
         imu_print_formatted(&imu_values);
 
-        // data.header.seq = seq;
         data.header.stamp = ros::Time::now();
         data.header.frame_id = "imu_frame";
-
-        // tf::Quaternion quat;
-        // quat.setRPY(imu_values.m[0], imu_values.m[1], imu_values.m[2]);
 
         mag.header = data.header;
         mag.magnetic_field.x = imu_values.m[0];
@@ -136,14 +124,9 @@ int main(int argc, char** argv)
         ros::spinOnce();
     }
     
-    // timer_stop();
-    
     // Clean up and close GPS/IMU
     if(!close_all())
         return 1;
-        
-    // Close timing
-    // timing_close(timer_fp);
     
     return 0;
 }
