@@ -22,22 +22,19 @@
 // Project Headers
 #include "main.h"
 #include "imu.h"
-// pthread period function
-#define TASK_PERIOD_US  (SAMPLING_PERIOD*1000000)
+
 #define PI 3.14159265
 #define G 9.807 // m/s^2
 
-// int gps_ok = 0;
 int imu_ok = 0;
-
-// gps_t gps_values;
-imu_t imu_values;
 
 void setup_sig_handler();
 void sig_handler(int sig);
 
 int main(int argc, char** argv)
 {
+    imu_t imu_values;
+    
     ros::init(argc, argv, "imu_node");
     
     ros::NodeHandle n;
@@ -51,6 +48,10 @@ int main(int argc, char** argv)
     int seq = 0;
 
     setup_sig_handler();
+
+    double orientation_stdev = 0.00056; // max 0.0015 gauss
+    double angular_velocity_stdev = 0.36 * PI / 180.0; // max 0.95 degree/s
+    double linear_acceleration_stdev = 0.6 * 10e-3 * G; // max 0.8 mg
 
     // Initialize GPS/IMU
     if(!init_all())
@@ -68,15 +69,15 @@ int main(int argc, char** argv)
         mag.magnetic_field.x = imu_values.m[0];
         mag.magnetic_field.y = imu_values.m[1];
         mag.magnetic_field.z = imu_values.m[2];
-        mag.magnetic_field_covariance[0] = 0.0015;
+        mag.magnetic_field_covariance[0] = orientation_stdev;
         mag.magnetic_field_covariance[1] = 0;
         mag.magnetic_field_covariance[2] = 0;
         mag.magnetic_field_covariance[3] = 0;
-        mag.magnetic_field_covariance[4] = 0.0015;
+        mag.magnetic_field_covariance[4] = orientation_stdev;
         mag.magnetic_field_covariance[5] = 0;
         mag.magnetic_field_covariance[6] = 0;
         mag.magnetic_field_covariance[7] = 0;
-        mag.magnetic_field_covariance[8] = 0.0015;
+        mag.magnetic_field_covariance[8] = orientation_stdev;
 
         // tf::quaternionTFToMsg(quat, data.orientation);
         data.orientation = geometry_msgs::Quaternion();
@@ -93,28 +94,28 @@ int main(int argc, char** argv)
         data.angular_velocity.x = imu_values.g[0] * PI / 180.0;
         data.angular_velocity.y = imu_values.g[1] * PI / 180.0;
         data.angular_velocity.z = imu_values.g[2] * PI / 180.0;
-        data.angular_velocity_covariance[0] = 0.95;
+        data.angular_velocity_covariance[0] = angular_velocity_stdev;
         data.angular_velocity_covariance[1] = 0;
         data.angular_velocity_covariance[2] = 0;
         data.angular_velocity_covariance[3] = 0;
-        data.angular_velocity_covariance[4] = 0.95;
+        data.angular_velocity_covariance[4] = angular_velocity_stdev;
         data.angular_velocity_covariance[5] = 0;
         data.angular_velocity_covariance[6] = 0;
         data.angular_velocity_covariance[7] = 0;
-        data.angular_velocity_covariance[8] = 0.95;
+        data.angular_velocity_covariance[8] = angular_velocity_stdev;
 
         data.linear_acceleration.x = imu_values.a[0] * G;
         data.linear_acceleration.y = imu_values.a[1] * G;
         data.linear_acceleration.z = -imu_values.a[2] * G;
-        data.linear_acceleration_covariance[0] = 0.8;
+        data.linear_acceleration_covariance[0] = linear_acceleration_stdev;
         data.linear_acceleration_covariance[1] = 0;
         data.linear_acceleration_covariance[2] = 0;
         data.linear_acceleration_covariance[3] = 0;
-        data.linear_acceleration_covariance[4] = 0.8;
+        data.linear_acceleration_covariance[4] = linear_acceleration_stdev;
         data.linear_acceleration_covariance[5] = 0;
         data.linear_acceleration_covariance[6] = 0;
         data.linear_acceleration_covariance[7] = 0;
-        data.linear_acceleration_covariance[8] = 0.8;
+        data.linear_acceleration_covariance[8] = linear_acceleration_stdev;
 
         imu_mag_pub.publish(mag);
         imu_pub.publish(data);

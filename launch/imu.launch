@@ -1,5 +1,5 @@
 <launch>
-    <node name="imu_driver" pkg="imu" type="imu_node" />
+    <node name="imu_driver" pkg="memsense_nano_imu" type="imu_node" />
     <!-- <node name="imu_filter" pkg="imu_complementary_filter" type="complementary_filter_node" > -->
         <!-- <param name="publish_tf" value="true" /> -->
         <!-- <param name="use_mag" value="true" /> -->
