@@ -1,8 +1,15 @@
 <launch>
     <node name="imu_driver" pkg="memsense_nano_imu" type="imu_node" />
-    <!-- <node name="imu_filter" pkg="imu_complementary_filter" type="complementary_filter_node" > -->
-        <!-- <param name="publish_tf" value="true" /> -->
-        <!-- <param name="use_mag" value="true" /> -->
-        <!-- <param name="publish_debug_topics" value="true" /> -->
-    <!-- </node> -->
+<!--     <node name="imu_filter" pkg="imu_complementary_filter" type="complementary_filter_node" >
+        <param name="publish_tf" value="true" />
+        <param name="use_mag" value="true" />
+        <param name="publish_debug_topics" value="true" />
+    </node> -->
+    <node name="imu_filter" pkg="imu_filter_madgwick" type="imu_filter_node" >
+        <param name="publish_tf" value="true" />
+        <param name="use_mag" value="true" />
+        <param name="use_magnetic_field_msg" value="true" />
+        <param name="publish_debug_topics" value="true" />
+    </node>
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find memsense_nano_imu)/launch/imu.rviz"/>
 </launch>
