@@ -19,6 +19,9 @@
 #include <sys/time.h>
 #include <time.h>
 
+// ROS
+ #include <ros/console.h>
+
 // Serial Port Headers (serialcom-termios)
 #include "serialcom.h"
 
@@ -49,12 +52,12 @@ int imu_init(char* serial_port)
 
 	// Check whether a port was defined, and enforce default value IMU_SERIAL_PORT
 	if(serial_port == NULL)
-		serial_port = IMU_SERIAL_PORT;
+		serial_port = (char*)IMU_SERIAL_PORT;
 
 	// Init serial port
 	if((err = serialcom_init(&imu_SerialPortConfig, 1, serial_port, BPS)) != SERIALCOM_SUCCESS)
 	{
-		ERROR2("serialcom_init failed", err);
+		ROS_ERROR_STREAM("serialcom_init failed " << err);
 		return 0;
 	}
 
@@ -85,9 +88,7 @@ int imu_get_data(imu_t* data)
 		// Read data from serial port
 		if((err = serialcom_receivebyte(&imu_SerialPortConfig, &data_read, TIMEOUT_US)) != SERIALCOM_SUCCESS)
 		{
-		#ifdef DEBUGF
-			ERROR2("serialcom_receivebyte failed", err);
-		#endif
+			ROS_ERROR_STREAM("serialcom_receivebyte failed " << err);
 			continue;
 		}
 
@@ -133,9 +134,7 @@ int imu_get_data(imu_t* data)
 				else
 				{
 					// Invalid MSG_SIZE, DEV_ID or MSG_ID, reset
-				#ifdef DEBUGF
-					DEBUG("Invalid MSG_SIZE, DEV_ID or MSG_ID: is D_DEV_ID correctly set?");
-				#endif
+					ROS_DEBUG("Invalid MSG_SIZE, DEV_ID or MSG_ID: is D_DEV_ID correctly set?");
 					b = 0;
 					s = IMU_SYNC_ST;
 				}
@@ -165,9 +164,7 @@ int imu_get_data(imu_t* data)
 				if(imu_checksum(data_read, imu_data))
 				{
 					imu_data[b] = data_read;
-
 					imu_decode(data, imu_data);
-					
 					data_ready = 1;
 				}
 
@@ -209,7 +206,7 @@ int imu_close()
 
 	if((err = serialcom_close(&imu_SerialPortConfig)) != SERIALCOM_SUCCESS)
 	{
-		ERROR2("serialcom_close failed", err);
+		ROS_ERROR_STREAM("serialcom_close failed " << err);
 		return 0;
 	}
 
@@ -226,9 +223,7 @@ int imu_checksum(unsigned char chksum, unsigned char imu_data[])
 
 	if(sum != chksum)
 	{
-	#ifdef DEBUGF
-		printf("sum != checksum (%d != %d)\n", sum, chksum);
-	#endif
+		ROS_DEBUG("sum != checksum (%d != %d)\n", sum, chksum);
 		return 0;
 	}
 	else
@@ -239,18 +234,18 @@ void imu_print_raw(unsigned char imu_data[])
 {
 	int i;
 
-	printf("IMU: ");
+	ROS_INFO("IMU: ");
 
 	for(i = 0; i < D_MSG_SIZE; i++)
 	{
-		printf("%02X ", imu_data[i]);
+		ROS_INFO("%02X ", imu_data[i]);
 	}
 
-	printf("\n");
+	// ROS_INFO("\n");
 }
 
 void imu_print_formatted(imu_t* data)
 {
-	printf("IMU: t=%.6lf g(%.3lf %.3lf %.3lf) a(%.3lf %.3lf %.3lf) m(%.3lf %.3lf %.3lf) tmp(%.3lf %.3lf %.3lf)\n",
+	ROS_INFO("IMU: t=%.6lf g(%.3lf %.3lf %.3lf) a(%.3lf %.3lf %.3lf) m(%.3lf %.3lf %.3lf) tmp(%.3lf %.3lf %.3lf)\n",
 			data->t, data->g[0], data->g[1], data->g[2], data->a[0], data->a[1], data->a[2], data->m[0], data->m[1], data->m[2], data->tmp[0], data->tmp[1], data->tmp[2]);
 }
