@@ -24,7 +24,7 @@
 #include "imu.h"
 
 #define PI 3.14159265
-#define G 9.807 // m/s^2
+#define G  9.80665 // m/s^2
 
 int imu_ok = 0;
 
@@ -39,8 +39,8 @@ int main(int argc, char** argv)
     
     ros::NodeHandle n;
 
-    ros::Publisher imu_pub = n.advertise<sensor_msgs::Imu>("imu/data_raw", 1000);
-    ros::Publisher imu_mag_pub = n.advertise<sensor_msgs::MagneticField>("imu/mag", 1000);
+    ros::Publisher imu_pub = n.advertise<sensor_msgs::Imu>("imu/data_raw", 10);
+    ros::Publisher imu_mag_pub = n.advertise<sensor_msgs::MagneticField>("imu/mag", 10);
 
     sensor_msgs::Imu data;
     sensor_msgs::MagneticField mag;
@@ -121,10 +121,10 @@ int main(int argc, char** argv)
 int init_all()
 {
     // Initialize and open IMU serial port
-    if((imu_ok = imu_init("/dev/ttyUSB0")) != 1)
-        WARN("could not initialize IMU!");
+    if((imu_ok = imu_init((char*)"/dev/ttyUSB0")) != 1)
+        ROS_WARN("could not initialize IMU!");
     else
-        INFO("IMU initialized...");
+        ROS_INFO("IMU initialized...");
     
     // If nothing is working, fails
     if(!imu_ok)
@@ -137,23 +137,23 @@ int close_all()
 {
     // Clean up and close IMU serial port
     if(!imu_close())
-        WARN("Could not close IMU!");
+        ROS_WARN("Could not close IMU!");
     else
-        INFO("IMU closed.");
+        ROS_INFO("IMU closed.");
 
-    GPS_IMU("Goodbye!");
+    ROS_INFO("Goodbye!");
     
     return 1;
 }
 
 void sig_handler(int sig)
 {
-    INFO("Interrupted! Closing...");
+    ROS_INFO("Interrupted! Closing...");
     
     // Close everything cleanly before exiting
     if(!close_all())
     {
-        FATAL("could not close cleanly!");
+        ROS_FATAL("could not close cleanly!");
         exit(1);
     }
     

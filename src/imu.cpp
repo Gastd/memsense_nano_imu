@@ -234,18 +234,16 @@ void imu_print_raw(unsigned char imu_data[])
 {
 	int i;
 
-	ROS_INFO("IMU: ");
-
+	// ROS_INFO("IMU: ");
 	for(i = 0; i < D_MSG_SIZE; i++)
 	{
 		ROS_INFO("%02X ", imu_data[i]);
 	}
-
 	// ROS_INFO("\n");
 }
 
 void imu_print_formatted(imu_t* data)
 {
-	ROS_INFO("IMU: t=%.6lf g(%.3lf %.3lf %.3lf) a(%.3lf %.3lf %.3lf) m(%.3lf %.3lf %.3lf) tmp(%.3lf %.3lf %.3lf)\n",
+	ROS_INFO("t=%.6lf g(%.3lf %.3lf %.3lf) a(%.3lf %.3lf %.3lf) m(%.3lf %.3lf %.3lf) tmp(%.3lf %.3lf %.3lf)\n",
 			data->t, data->g[0], data->g[1], data->g[2], data->a[0], data->a[1], data->a[2], data->m[0], data->m[1], data->m[2], data->tmp[0], data->tmp[1], data->tmp[2]);
 }
