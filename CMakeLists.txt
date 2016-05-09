@@ -18,7 +18,7 @@ include_directories(
 )
 
 ## Declare a C++ executable
-add_executable(imu_node src/imu_node.cpp src/imu.cpp src/serialcom.cpp)
+add_executable(imu_node src/imu_node.cpp src/memsense_nano_imu.cpp src/serialcom.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
