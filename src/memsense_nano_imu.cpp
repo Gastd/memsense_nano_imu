@@ -33,7 +33,7 @@ Imu::~Imu()
     close();
 }
 
-int Imu::init()
+void Imu::init()
 {
     int err;
 
@@ -41,13 +41,11 @@ int Imu::init()
     if((err = serialcom_init(&imu_SerialPortConfig, 1, (char*)imu_serial_port.c_str(), BPS)) != SERIALCOM_SUCCESS)
     {
         ROS_ERROR_STREAM("serialcom_init failed " << err);
-        return 0;
+        throwSerialComException(err);
     }
-
-    return 1;
 }
 
-int Imu::init(std::string& serial_port)
+void Imu::init(std::string& serial_port)
 {
     int err;
 
@@ -59,10 +57,8 @@ int Imu::init(std::string& serial_port)
     if((err = serialcom_init(&imu_SerialPortConfig, 1, (char*)serial_port.c_str(), BPS)) != SERIALCOM_SUCCESS)
     {
         ROS_ERROR_STREAM("serialcom_init failed " << err);
-        return 0;
+        throwSerialComException(err);
     }
-
-    return 1;
 }
 
 int Imu::readDataFromImu()
@@ -202,20 +198,18 @@ void Imu::decode()
     thermo.z = DS_TMP*((short)((imu_data.at(TMPZ_MSB) << 8) | imu_data.at(TMPZ_LSB))) + 25;
 }
 
-int Imu::close()
+void Imu::close()
 {
     int err;
 
     if((err = serialcom_close(&imu_SerialPortConfig)) != SERIALCOM_SUCCESS)
     {
         ROS_ERROR_STREAM("serialcom_close failed " << err);
-        return 0;
+        throwSerialComException(err);
     }
-
-    return 1;
 }
 
-int Imu::receiveDataFromImu(sensor_msgs::Imu& imu_data, sensor_msgs::MagneticField& mag_data)
+void Imu::receiveDataFromImu(sensor_msgs::Imu& imu_data, sensor_msgs::MagneticField& mag_data)
 {
     readDataFromImu();
     imu_data.orientation = geometry_msgs::Quaternion();
@@ -229,21 +223,52 @@ int Imu::receiveDataFromImu(sensor_msgs::Imu& imu_data, sensor_msgs::MagneticFie
     imu_data.linear_acceleration.y = accel.y * G;
     imu_data.linear_acceleration.z = accel.z * G;
 
-    // std::cout << GYRY_MSB << std::endl;
-    // std::cout << imu_data.linear_acceleration.z << std::endl;
-
     mag_data.magnetic_field.x = magnet.x;
     mag_data.magnetic_field.y = magnet.y;
     mag_data.magnetic_field.z = magnet.z;
-
-    // std::cout << "gyro" << std::endl;
-    // std::cout << gyro << std::endl;
-    // std::cout << imu_data.angular_velocity << std::endl;
-    // std::cout << "accel" << std::endl;
-    // std::cout << accel << std::endl;
-    // std::cout << imu_data.linear_acceleration << std::endl;
 }
 
+void Imu::throwSerialComException(int err)
+{
+    switch(err)
+    {
+        case SERIALCOM_ERROR_IOPL:
+        {
+            throw std::runtime_error("serialcom error iopl");
+            break;
+        }
+        case SERIALCOM_ERROR_MAXWAITENDOFTRANSMISSION:
+        {
+            throw std::runtime_error("serialcom error max wait end of transmission");
+            break;
+        }
+        case SERIALCOM_ERROR_MAXWAITFORRECEPTION:
+        {
+            throw std::runtime_error("serialcom error max wait for reception");
+            break;
+        }
+        case SERIALCOM_ERROR_MAXBPSPRECISION:
+        {
+            throw std::runtime_error("serialcom error max bps precision");
+            break;
+        }
+        case SERIALCOM_ERROR_INCORRECTPORTNUMBER:
+        {
+            throw std::runtime_error("serialcom error incorrect port number");
+            break;
+        }
+        case SERIALCOM_ERROR_INVALIDBAUDRATE:
+        {
+            throw std::runtime_error("serialcom error invalid baudrate");
+            break;
+        }
+        case SERIALCOM_ERROR_INVALIDDEVICE:
+        {
+            throw std::runtime_error("serialcom error invalid device");
+            break;
+        }
+    }
+}
 
 int Imu::checksum(unsigned char chksum)
 {

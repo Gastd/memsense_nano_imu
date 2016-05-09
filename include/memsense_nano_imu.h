@@ -49,6 +49,8 @@
 #include <string>
 #include <sys/stat.h>
 #include <sys/time.h>
+#include <stdexcept>
+#include <exception>
 #include <time.h>
 #include <cmath>
 #include <termios.h>
@@ -74,10 +76,10 @@
 
 
         Imu();
-        int init();
-        int init(std::string&);
-        int receiveDataFromImu(sensor_msgs::Imu&, sensor_msgs::MagneticField&);
-        int close();
+        void init();
+        void init(std::string&);
+        void receiveDataFromImu(sensor_msgs::Imu&, sensor_msgs::MagneticField&);
+        void close();
         ~Imu();
     private:
         // Sample byte order/format
@@ -167,6 +169,7 @@
 
         void decode();
         int readDataFromImu();
+        void throwSerialComException(int);
         int checksum(unsigned char);
     };
 
