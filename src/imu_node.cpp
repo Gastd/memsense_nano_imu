@@ -61,20 +61,20 @@ public:
         private_node_handle_.param("assume_calibrated", calibrated_, false);
         private_node_handle_.param("port", port, std::string("/dev/ttyUSB0"));
         private_node_handle_.param("max_drift_rate", max_drift_rate_, 0.0002);
-
-        imu_data_pub_ = imu_node_handle.advertise<sensor_msgs::Imu>("data_raw", 50);
-        mag_data_pub_ = imu_node_handle.advertise<sensor_msgs::MagneticField>("mag", 50);
-        bias_x_ = bias_y_ = bias_z_ = 0;
-
         private_node_handle_.param("frame_id", frameid_, std::string("imu"));
-        imu_reading_.header.frame_id = frameid_;
-        mag_reading_.header.frame_id = frameid_;
-
-        private_node_handle_.param("time_offset", offset_, 0.0);
-
         private_node_handle_.param("linear_acceleration_stdev", linear_acceleration_stdev_, 0.6 * 10e-3 * imu.G);
         private_node_handle_.param("orientation_stdev", orientation_stdev_, 0.00056);
         private_node_handle_.param("angular_velocity_stdev", angular_velocity_stdev_, 0.36 * M_PI / 180.0);
+
+        imu_data_pub_ = imu_node_handle.advertise<sensor_msgs::Imu>("data_raw", 50);
+        mag_data_pub_ = imu_node_handle.advertise<sensor_msgs::MagneticField>("mag", 50);
+        // calibrate_serv_ = imu_node_handle.advertiseService("calibrate", &ImuNode::calibrate, this);
+
+        running = false;
+        bias_x_ = bias_y_ = bias_z_ = 0;
+
+        imu_reading_.header.frame_id = frameid_;
+        mag_reading_.header.frame_id = frameid_;
 
         angular_velocity_covariance_ = angular_velocity_stdev_ * angular_velocity_stdev_;
         orientation_covariance_ = orientation_stdev_ * orientation_stdev_;
@@ -132,7 +132,7 @@ public:
     bool spin()
     {
         start();
-        while(!ros::isShuttingDown())
+        while(ros::ok())
         {
             publishData();
             ros::spinOnce();
