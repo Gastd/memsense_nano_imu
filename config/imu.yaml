@@ -1,0 +1,15 @@
+## USB port
+port: /dev/ttyUSB0
+
+
+##### Calibration ####
+autocalibrate: true
+assume_calibrated: false
+
+max_drift_rate: 0.0002
+frame_id: imu
+
+### Standard Deviation
+# linear_acceleration_stdev:
+# orientation_stdev:
+# angular_velocity_stdev:
