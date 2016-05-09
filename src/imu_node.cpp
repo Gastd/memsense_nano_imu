@@ -4,6 +4,7 @@
 #include "memsense_nano_imu.h"
 #include "sensor_msgs/Imu.h"
 #include "sensor_msgs/MagneticField.h"
+#include "std_srvs/Empty.h"
 #include <tf/transform_datatypes.h>
 
 class ImuNode 
@@ -19,6 +20,7 @@ public:
     ros::NodeHandle private_node_handle_;
     ros::Publisher imu_data_pub_;
     ros::Publisher mag_data_pub_;
+    ros::ServiceServer calibrate_serv_;
 
     bool running;
 
@@ -117,21 +119,31 @@ public:
 
     void start()
     {
-        imu.init(port);
-
-        if (autocalibrate_ || calibrate_requested_)
+        try
         {
-            doCalibrate();
-            calibrate_requested_ = false;
-            autocalibrate_ = false; // No need to do this each time we reopen the device.
+            imu.init(port);
+
+            if (autocalibrate_ || calibrate_requested_)
+            {
+                doCalibrate();
+                calibrate_requested_ = false;
+                autocalibrate_ = false; // No need to do this each time we reopen the device.
+            }
+            else
+            {
+                ROS_INFO("Not calibrating the IMU sensor. Use the calibrate service to calibrate it before use.");
+            }
+
+            ROS_INFO("IMU sensor initialized.");
+            running = true;
         }
-        else
+        catch(const std::exception& e)
         {
-            ROS_INFO("Not calibrating the IMU sensor. Use the calibrate service to calibrate it before use.");
+            ROS_ERROR("Exception thrown while starting IMU. This sometimes happens if you are not connected to an IMU or if another process is trying to access the IMU port. You may try 'lsof|grep %s' to see if other processes have the port open.\n %s", port.c_str(), e.what());
+            ROS_WARN("Could not start IMU!");
+            std::cerr << e.what() << std::endl;
         }
 
-        ROS_INFO("IMU sensor initialized.");
-        running = true;
     }
 
     bool spin()
@@ -211,12 +223,49 @@ public:
         }
     }
 
+    bool calibrate(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp)
+    {
+        bool old_running = running;
+
+        try
+        {
+            calibrate_requested_ = true;
+            if (old_running)
+            {
+                stop();
+                start(); // Start will do the calibration.
+            }
+            else
+            {
+                imu.init(port);
+                doCalibrate();
+                imu.close();
+            }
+        }
+        catch (const std::exception& e) {
+          error_count_++;
+          calibrated_ = false;
+          ROS_ERROR("Exception thrown while calibrating IMU %s", e.what());
+          stop();
+          if (old_running)
+            start(); // Might throw, but we have nothing to lose... Needs restructuring.
+          return false;
+        }
+
+        return true;
+    }
     void stop()
     {
-        if(!imu.close())
-            ROS_WARN("Could not close IMU!");
-        else
+        try
+        {
+            imu.close();
             ROS_INFO("IMU closed.");
+        }
+        catch(const std::exception& e)
+        {
+            ROS_WARN("Could not close IMU!");
+            std::cerr << e.what() << std::endl;
+        }
 
         ROS_INFO("Goodbye!");
     }
