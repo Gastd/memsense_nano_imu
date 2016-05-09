@@ -57,6 +57,7 @@ public:
     {
         ros::NodeHandle imu_node_handle(node_handle_, "imu");
 
+        // Params
         private_node_handle_.param("autocalibrate", autocalibrate_, true);
         private_node_handle_.param("assume_calibrated", calibrated_, false);
         private_node_handle_.param("port", port, std::string("/dev/ttyUSB0"));
@@ -66,10 +67,14 @@ public:
         private_node_handle_.param("orientation_stdev", orientation_stdev_, 0.00056);
         private_node_handle_.param("angular_velocity_stdev", angular_velocity_stdev_, 0.36 * M_PI / 180.0);
 
+        // Publishers
         imu_data_pub_ = imu_node_handle.advertise<sensor_msgs::Imu>("data_raw", 50);
         mag_data_pub_ = imu_node_handle.advertise<sensor_msgs::MagneticField>("mag", 50);
-        // calibrate_serv_ = imu_node_handle.advertiseService("calibrate", &ImuNode::calibrate, this);
 
+        // Services
+        calibrate_serv_ = imu_node_handle.advertiseService("calibrate", &ImuNode::calibrate, this);
+
+        // Variables init
         running = false;
         bias_x_ = bias_y_ = bias_z_ = 0;
 
