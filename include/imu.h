@@ -26,16 +26,6 @@
 // Time scale for 16-bit time in seconds/count
 #define SC_TMR			2.1701E-6
 
-// Aux print-outs
-#define FATAL(x)		printf("\033[31m\033[1mFATAL:\033[0;0m\t%s\n",x)
-#define ERROR(x)		printf("\033[33m\033[1mERROR:\033[0;0m\t%s\n",x)
-#define WARN(x)			printf("\033[32m\033[1mWARN:\033[0;0m\t%s\n",x)
-#define INFO(x)			printf("\033[0;0m\033[1mINFO:\033[0;0m\t%s\n",x)
-#define DEBUG(x)		printf("\033[36m\033[1mDEBUG:\033[0;0m\t%s\n",x)
-#define VERBOSE(x)		printf("\033[34m\033[1mVERBOSE:\033[0;0m\t%s\n",x)
-
-#define ERROR2(x,y)		printf("\033[33m\033[1mERROR:\033[0;0m\t%s (%d)\n",x,y)
-
 /* IMU data struct */
 typedef struct imu
 {

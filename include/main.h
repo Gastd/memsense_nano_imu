@@ -15,9 +15,5 @@
 #define DATA_SAMPLES	2*(EXPERIMENT_TIME*SAMPLING_PERIOD)
 
 int init_all();
-int datalogger_init();
-int datalogger_close();
 int close_all();
-
-int kbhit();
 void sigint();
