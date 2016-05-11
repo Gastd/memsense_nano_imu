@@ -2,6 +2,7 @@
 
 Imu::Imu()
 {
+    thermo.resize(3);
     D_SYNC     = 0xFF;
     D_MSG_SIZE = 0x26;
     D_DEV_ID   = 0xFF;
@@ -193,9 +194,9 @@ void Imu::decode()
     magnet.y = DS_MAG*((short)((imu_data.at(MAGY_MSB) << 8) | imu_data.at(MAGY_LSB)));
     magnet.z = DS_MAG*((short)((imu_data.at(MAGZ_MSB) << 8) | imu_data.at(MAGZ_LSB)));
 
-    thermo.x = DS_TMP*((short)((imu_data.at(TMPX_MSB) << 8) | imu_data.at(TMPX_LSB))) + 25;
-    thermo.y = DS_TMP*((short)((imu_data.at(TMPY_MSB) << 8) | imu_data.at(TMPY_LSB))) + 25;
-    thermo.z = DS_TMP*((short)((imu_data.at(TMPZ_MSB) << 8) | imu_data.at(TMPZ_LSB))) + 25;
+    thermo.at(0) = DS_TMP*((short)((imu_data.at(TMPX_MSB) << 8) | imu_data.at(TMPX_LSB))) + 25;
+    thermo.at(1) = DS_TMP*((short)((imu_data.at(TMPY_MSB) << 8) | imu_data.at(TMPY_LSB))) + 25;
+    thermo.at(2) = DS_TMP*((short)((imu_data.at(TMPZ_MSB) << 8) | imu_data.at(TMPZ_LSB))) + 25;
 }
 
 void Imu::close()
@@ -209,7 +210,7 @@ void Imu::close()
     }
 }
 
-void Imu::receiveDataFromImu(sensor_msgs::Imu& imu_data, sensor_msgs::MagneticField& mag_data)
+void Imu::receiveDataFromImu(sensor_msgs::Imu& imu_data, sensor_msgs::MagneticField& mag_data, sensor_msgs::Temperature& temp_data)
 {
     readDataFromImu();
     imu_data.orientation = geometry_msgs::Quaternion();
@@ -226,6 +227,19 @@ void Imu::receiveDataFromImu(sensor_msgs::Imu& imu_data, sensor_msgs::MagneticFi
     mag_data.magnetic_field.x = magnet.x;
     mag_data.magnetic_field.y = magnet.y;
     mag_data.magnetic_field.z = magnet.z;
+
+    double temp_mean = (thermo.at(0) + thermo.at(1) + thermo.at(2))/3.0;
+
+    double temp_var;
+
+    for (int i = 0; i < 3; ++i)
+    {
+        temp_var += (thermo.at(i) - temp_mean) * (thermo.at(i) - temp_mean);
+    }
+    temp_var /= 3.0;
+
+    temp_data.temperature = temp_mean;
+    temp_data.variance = temp_var;
 }
 
 void Imu::throwSerialComException(int err)

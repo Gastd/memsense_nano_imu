@@ -60,6 +60,7 @@
 #include "ros/ros.h"
 #include <ros/console.h>
 #include "sensor_msgs/Imu.h"
+#include "sensor_msgs/Temperature.h"
 #include "sensor_msgs/MagneticField.h"
 #include <tf/transform_datatypes.h>
 
@@ -78,7 +79,7 @@
         Imu();
         void init();
         void init(std::string&);
-        void receiveDataFromImu(sensor_msgs::Imu&, sensor_msgs::MagneticField&);
+        void receiveDataFromImu(sensor_msgs::Imu&, sensor_msgs::MagneticField&, sensor_msgs::Temperature&);
         void close();
         ~Imu();
     private:
@@ -162,7 +163,7 @@
         geometry_msgs::Vector3 gyro;
         geometry_msgs::Vector3 accel;
         geometry_msgs::Vector3 magnet;
-        geometry_msgs::Vector3 thermo;
+        std::vector<double> thermo;
         std::vector<unsigned char> imu_data;
 
         SERIALPORTCONFIG imu_SerialPortConfig;
