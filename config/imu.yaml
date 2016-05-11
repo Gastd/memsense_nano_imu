@@ -13,3 +13,4 @@ frame_id: imu
 # linear_acceleration_stdev:
 # orientation_stdev:
 # angular_velocity_stdev:
+# magnetic_field_stddev:

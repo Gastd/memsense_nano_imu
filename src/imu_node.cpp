@@ -50,6 +50,7 @@ public:
     double angular_velocity_stdev_, angular_velocity_covariance_;
     double linear_acceleration_covariance_, linear_acceleration_stdev_;
     double orientation_covariance_, orientation_stdev_;
+    double magnetic_field_covariance_, magnetic_field_stddev_;
 
     double max_drift_rate_;
 
@@ -69,8 +70,9 @@ public:
         private_node_handle_.param("max_drift_rate", max_drift_rate_, 0.0002);
         private_node_handle_.param("frame_id", frameid_, std::string("imu"));
         private_node_handle_.param("linear_acceleration_stdev", linear_acceleration_stdev_, 0.6 * 10e-3 * imu.G);
-        private_node_handle_.param("orientation_stdev", orientation_stdev_, 0.00056);
+        private_node_handle_.param("orientation_stdev", orientation_stdev_, -1.0);
         private_node_handle_.param("angular_velocity_stdev", angular_velocity_stdev_, 0.36 * M_PI / 180.0);
+        private_node_handle_.param("magnetic_field_stddev", magnetic_field_stddev_, 0.00056);
 
         // Publishers
         imu_data_pub_ = imu_node_handle.advertise<sensor_msgs::Imu>("data_raw", 10);
@@ -91,6 +93,7 @@ public:
         angular_velocity_covariance_ = angular_velocity_stdev_ * angular_velocity_stdev_;
         orientation_covariance_ = orientation_stdev_ * orientation_stdev_;
         linear_acceleration_covariance_ = linear_acceleration_stdev_ * linear_acceleration_stdev_;
+        magnetic_field_covariance_ = magnetic_field_stddev_ * magnetic_field_stddev_;
 
         imu_reading_.linear_acceleration_covariance[0] = linear_acceleration_covariance_;
         imu_reading_.linear_acceleration_covariance[4] = linear_acceleration_covariance_;
@@ -104,9 +107,9 @@ public:
         imu_reading_.orientation_covariance[4] = -1;
         imu_reading_.orientation_covariance[8] = -1;
 
-        mag_reading_.magnetic_field_covariance[0] = orientation_covariance_;
-        mag_reading_.magnetic_field_covariance[4] = orientation_covariance_;
-        mag_reading_.magnetic_field_covariance[8] = orientation_covariance_;
+        mag_reading_.magnetic_field_covariance[0] = magnetic_field_covariance_;
+        mag_reading_.magnetic_field_covariance[4] = magnetic_field_covariance_;
+        mag_reading_.magnetic_field_covariance[8] = magnetic_field_covariance_;
 
         // self_test_.add("Close Test", this, &ImuNode::pretest);
         // self_test_.add("Interruption Test", this, &ImuNode::InterruptionTest);
