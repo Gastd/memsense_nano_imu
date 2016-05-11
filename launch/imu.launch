@@ -14,5 +14,6 @@
         <param name="use_magnetic_field_msg" value="true" />
         <param name="publish_debug_topics" value="true" />
     </node>
+    <node pkg="tf" type="static_transform_publisher" name="imu_ned_to_enu" args="0.0 0.0 0.0 0.0 0.0 3.14 imu imu_enu 100" />
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find memsense_nano_imu)/launch/imu.rviz"/>
 </launch>
