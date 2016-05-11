@@ -196,11 +196,15 @@ public:
         bias_x_ = -imu_reading_.angular_velocity.x;
         bias_y_ = -imu_reading_.angular_velocity.y;
         bias_z_ = -imu_reading_.angular_velocity.z;
+        ROS_INFO("Gyro bias x = %f, y = %f e z = %f", bias_x_, bias_y_, bias_z_);
 
+        ROS_INFO("Calibrating IMU accel.");
         abias_x_ = -imu_reading_.linear_acceleration.x;
         abias_y_ = -imu_reading_.linear_acceleration.y;
         abias_z_ = imu.G - imu_reading_.linear_acceleration.z;
+        ROS_INFO("Accel bias x = %f, y = %f e z = %f", abias_x_, abias_y_, abias_z_);
 
+        ROS_INFO("Calculating angular drift.");
         double x_rate = 0.0;
         double y_rate = 0.0;
         double z_rate = 0.0;
@@ -208,9 +212,6 @@ public:
 
         getData(imu_reading_, mag_reading_, tem_reading_);
         ros::Time start_time = imu_reading_.header.stamp;
-        ROS_INFO("Gyro bias x = %f, y = %f e z = %f", bias_x_, bias_y_, bias_z_);
-        ROS_INFO("Accel bias x = %f, y = %f e z = %f", abias_x_, abias_y_, abias_z_);
-
         while(imu_reading_.header.stamp - start_time < ros::Duration(2.0))
         {
             getData(imu_reading_, mag_reading_, tem_reading_);
