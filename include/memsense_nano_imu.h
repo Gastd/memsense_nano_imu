@@ -41,19 +41,9 @@
  *  (#) Digital Sensitivity     DS_TMP
  */
 // General
-#include <errno.h>
-#include <pthread.h>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string>
-#include <sys/stat.h>
-#include <sys/time.h>
 #include <stdexcept>
 #include <exception>
-#include <time.h>
 #include <cmath>
-#include <termios.h>
 #include <vector>
 
 // ROS
@@ -66,7 +56,6 @@
 
 // Serial Port Headers (serialcom-termios)
 #include "serialcom.h"
-// #include "imu-bytes.h"
 
 // namespace memsense_nano_imu {
 
