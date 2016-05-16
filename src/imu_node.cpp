@@ -11,7 +11,7 @@
 class ImuNode 
 {
 public:
-    Imu imu;
+    memsense_nano_imu::Imu imu;
     sensor_msgs::Imu imu_reading_;
     sensor_msgs::Temperature tem_reading_;
     sensor_msgs::MagneticField mag_reading_;

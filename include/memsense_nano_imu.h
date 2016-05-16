@@ -60,7 +60,59 @@
 // Serial Port Headers (serialcom-termios)
 #include "serialcom.h"
 
-// namespace memsense_nano_imu {
+namespace MEMSENSE_BYTES {
+    // Sample byte order/format
+    enum BYTES
+    {
+        SYNC0, //       0
+        SYNC1, //       1
+        SYNC2, //       2
+        SYNC3, //       3
+        MSG_SIZE, //    4
+        DEV_ID, //      5
+        MSG_ID, //      6
+        TIME_MSB, //    7
+        TIME_LSB, //    8
+        GYRX_MSB = 13,//13
+        GYRX_LSB, //    14
+        GYRY_MSB, //    15
+        GYRY_LSB, //    16
+        GYRZ_MSB, //    17
+        GYRZ_LSB, //    18
+        ACCX_MSB, //    19
+        ACCX_LSB, //    20
+        ACCY_MSB, //    21
+        ACCY_LSB, //    22
+        ACCZ_MSB, //    23
+        ACCZ_LSB, //    24
+        MAGX_MSB, //    25
+        MAGX_LSB, //    26
+        MAGY_MSB, //    27
+        MAGY_LSB, //    28
+        MAGZ_MSB, //    29
+        MAGZ_LSB, //    30
+        TMPX_MSB, //    31
+        TMPX_LSB, //    32
+        TMPY_MSB, //    33
+        TMPY_LSB, //    34
+        TMPZ_MSB, //    35
+        TMPZ_LSB, //    36
+        CHECKSUM  //    37
+    };
+} // MEMSENSE_BYTES
+
+namespace MEMSENSE_STATES {
+    enum STATES
+    {
+        IMU_SYNC_ST,    //     0
+        IMU_HEADER_ST,  //     1
+        IMU_PAYLOAD_ST, //     2
+        IMU_CHECKSUM_ST //     3
+    };
+} // MEMSENSE_STATES
+
+
+namespace memsense_nano_imu {
 
     class Imu
     {
@@ -76,44 +128,6 @@
         void close();
         ~Imu();
     private:
-        // Sample byte order/format
-        enum BYTES
-        {
-            SYNC0, //       0
-            SYNC1, //       1
-            SYNC2, //       2
-            SYNC3, //       3
-            MSG_SIZE, //    4
-            DEV_ID, //      5
-            MSG_ID, //      6
-            TIME_MSB, //    7
-            TIME_LSB, //    8
-            GYRX_MSB = 13,//13
-            GYRX_LSB, //    14
-            GYRY_MSB, //    15
-            GYRY_LSB, //    16
-            GYRZ_MSB, //    17
-            GYRZ_LSB, //    18
-            ACCX_MSB, //    19
-            ACCX_LSB, //    20
-            ACCY_MSB, //    21
-            ACCY_LSB, //    22
-            ACCZ_MSB, //    23
-            ACCZ_LSB, //    24
-            MAGX_MSB, //    25
-            MAGX_LSB, //    26
-            MAGY_MSB, //    27
-            MAGY_LSB, //    28
-            MAGZ_MSB, //    29
-            MAGZ_LSB, //    30
-            TMPX_MSB, //    31
-            TMPX_LSB, //    32
-            TMPY_MSB, //    33
-            TMPY_LSB, //    34
-            TMPZ_MSB, //    35
-            TMPZ_LSB, //    36
-            CHECKSUM  //    37
-        };
 
         // Default values
         const int D_SYNC;
@@ -121,13 +135,6 @@
         const int D_DEV_ID;
         const int D_MSG_ID;
 
-        enum states
-        {
-            IMU_SYNC_ST,    //     0
-            IMU_HEADER_ST,  //     1
-            IMU_PAYLOAD_ST, //     2
-            IMU_CHECKSUM_ST //     3
-        };
 
         // Size of IMU data packets
         const double IMU_PACKET_SIZE;
@@ -166,5 +173,6 @@
         int checksum(unsigned char);
     };
 
-//} // memsense_nano_imu
+} // memsense_nano_imu
+
 #endif // MEMSENSE_NANO_IMU_H
