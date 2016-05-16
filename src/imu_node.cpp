@@ -69,7 +69,7 @@ public:
         private_node_handle_.param("port", port, std::string("/dev/ttyUSB0"));
         private_node_handle_.param("max_drift_rate", max_drift_rate_, 0.0002);
         private_node_handle_.param("frame_id", frameid_, std::string("imu"));
-        private_node_handle_.param("linear_acceleration_stdev", linear_acceleration_stdev_, 0.6 * 10e-3 * imu.G);
+        private_node_handle_.param("linear_acceleration_stdev", linear_acceleration_stdev_, 0.6 * 10e-3 * imu.GRAVITY);
         private_node_handle_.param("orientation_stdev", orientation_stdev_, -1.0);
         private_node_handle_.param("angular_velocity_stdev", angular_velocity_stdev_, 0.36 * M_PI / 180.0);
         private_node_handle_.param("magnetic_field_stddev", magnetic_field_stddev_, 0.00056);
@@ -204,7 +204,7 @@ public:
         ROS_INFO("Calibrating IMU accel.");
         abias_x_ = -imu_reading_.linear_acceleration.x;
         abias_y_ = -imu_reading_.linear_acceleration.y;
-        abias_z_ = imu.G - imu_reading_.linear_acceleration.z;
+        abias_z_ = imu.GRAVITY - imu_reading_.linear_acceleration.z;
         ROS_INFO("Accel bias x = %f, y = %f e z = %f", abias_x_, abias_y_, abias_z_);
 
         ROS_INFO("Calculating angular drift.");

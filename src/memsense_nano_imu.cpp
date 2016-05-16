@@ -1,30 +1,12 @@
 #include "memsense_nano_imu.h"
 
-Imu::Imu()
+Imu::Imu() : D_SYNC(0xFF), D_MSG_SIZE(0x26), D_DEV_ID(0xFF), D_MSG_ID(0x14), IMU_PACKET_SIZE(38), DS_GYR(1.3733E-2), 
+             DS_ACC(9.1553E-5), DS_MAG(8.6975E-5), DS_TMP(1.8165E-2), OS_TMP(25), SC_TMR(2.1701E-6), TIMEOUT_US(100000),
+             BPS(115200), MAX_BYTES(100), GRAVITY(9.80665)
 {
     thermo.resize(3);
-    D_SYNC     = 0xFF;
-    D_MSG_SIZE = 0x26;
-    D_DEV_ID   = 0xFF;
-    D_MSG_ID   = 0x14;
-
-    IMU_PACKET_SIZE = 38;
-
-    DS_GYR = 1.3733E-2;
-    DS_ACC = 9.1553E-5;
-    DS_MAG = 8.6975E-5;
-
-    DS_TMP = 1.8165E-2;
-    OS_TMP = 25;
-
-    SC_TMR = 2.1701E-6;
 
     imu_serial_port  = (char*)"/dev/ttyUSB0";
-    TIMEOUT_US   =   100000;
-    BPS          =   115200;
-    MAX_BYTES    =   100;
-
-    G = 9.80665;
 
     imu_data.resize(IMU_PACKET_SIZE);
 }
@@ -220,9 +202,9 @@ void Imu::receiveDataFromImu(sensor_msgs::Imu& imu_data, sensor_msgs::MagneticFi
     imu_data.angular_velocity.z = gyro.z * M_PI / 180.0;
 
 
-    imu_data.linear_acceleration.x = accel.x * G;
-    imu_data.linear_acceleration.y = accel.y * G;
-    imu_data.linear_acceleration.z = accel.z * G;
+    imu_data.linear_acceleration.x = accel.x * GRAVITY;
+    imu_data.linear_acceleration.y = accel.y * GRAVITY;
+    imu_data.linear_acceleration.z = accel.z * GRAVITY;
 
     mag_data.magnetic_field.x = magnet.x;
     mag_data.magnetic_field.y = magnet.y;

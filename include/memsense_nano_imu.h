@@ -1,3 +1,6 @@
+#ifndef MEMSENSE_NANO_IMU_H
+#define MEMSENSE_NANO_IMU_H
+
 /** ### MEMSense NanoIMU Specifications ###
  *
  *  Serial port:
@@ -62,7 +65,8 @@
     class Imu
     {
     public:
-        double G;
+        //! Gravity (m/sec^2)
+        const double GRAVITY;
 
 
         Imu();
@@ -73,7 +77,7 @@
         ~Imu();
     private:
         // Sample byte order/format
-        enum bytes
+        enum BYTES
         {
             SYNC0, //       0
             SYNC1, //       1
@@ -112,10 +116,10 @@
         };
 
         // Default values
-        int D_SYNC;
-        int D_MSG_SIZE;
-        int D_DEV_ID;
-        int D_MSG_ID;
+        const int D_SYNC;
+        const int D_MSG_SIZE;
+        const int D_DEV_ID;
+        const int D_MSG_ID;
 
         enum states
         {
@@ -126,27 +130,26 @@
         };
 
         // Size of IMU data packets
-        double IMU_PACKET_SIZE;
+        const double IMU_PACKET_SIZE;
 
         // Digital sensitivy for each of the sensors
-        double DS_GYR;
-        double DS_ACC;
-        double DS_MAG;
+        const double DS_GYR;
+        const double DS_ACC;
+        const double DS_MAG;
 
         // Thermometer in the gyros also have an offset
-        double DS_TMP;
-        double OS_TMP;
+        const double DS_TMP;
+        const double OS_TMP;
 
         // Time scale for 16-bit time in seconds/count
-        double SC_TMR;
+        const double SC_TMR;
 
         // Serial port
         std::string imu_serial_port;
-        int TIMEOUT_US;
-        int BPS;
-        int MAX_BYTES;
+        const int TIMEOUT_US;
+        const int BPS;
+        const int MAX_BYTES;
         
-        //! Gravity (m/sec^2)
 
         double stamp;
         geometry_msgs::Vector3 gyro;
@@ -164,3 +167,4 @@
     };
 
 //} // memsense_nano_imu
+#endif // MEMSENSE_NANO_IMU_H
