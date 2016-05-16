@@ -154,7 +154,7 @@ public:
                              << port.c_str() <<
                              "' to see if other processes have the port open."<< std::endl << e.what());
             ROS_WARN("Could not start IMU!");
-            std::cerr << e.what() << std::endl;
+            ROS_ERROR_STREAM(e.what());
         }
 
     }
@@ -278,6 +278,7 @@ public:
 
         return true;
     }
+
     void stop()
     {
         try
@@ -288,7 +289,7 @@ public:
         catch(const std::exception& e)
         {
             ROS_WARN("Could not close IMU!");
-            std::cerr << e.what() << std::endl;
+            ROS_ERROR_STREAM(e.what());
         }
 
         ROS_INFO("Goodbye!");
