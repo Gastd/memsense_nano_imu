@@ -10,7 +10,7 @@
 
 class ImuNode 
 {
-public:
+private:
     memsense_nano_imu::Imu imu;
     sensor_msgs::Imu imu_reading_;
     sensor_msgs::Temperature tem_reading_;
@@ -57,6 +57,7 @@ public:
     double desired_freq_;
     // diagnostic_updater::FrequencyStatus freq_diag_;
 
+public:
     ImuNode(ros::NodeHandle n) : node_handle_(n), private_node_handle_("~"), calibrate_requested_(false),
     error_count_(0), slow_count_(0), desired_freq_(50)
     // freq_diag_(diagnostic_updater::FrequencyStatusParam(&desired_freq_, &desired_freq_, 0.05))
