@@ -7,7 +7,7 @@ autocalibrate: true
 assume_calibrated: false
 
 max_drift_rate: 0.0002
-frame_id: imu
+frame_id: imu_link_ned
 
 ### Standard Deviation
 # linear_acceleration_stdev:
