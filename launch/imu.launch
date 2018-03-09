@@ -1,6 +1,6 @@
 <launch>
     <arg name="memsense_config_file" default="$(find memsense_nano_imu)/config/imu.yaml"/>
-    <node name="imu_driver" pkg="memsense_nano_imu" type="imu_node" >
+    <node name="imu_driver" pkg="memsense_nano_imu" type="imu_node" output="screen">
         <rosparam file="$(arg memsense_config_file)" command="load"/>
     </node>
 <!--     <node name="imu_filter" pkg="imu_complementary_filter" type="complementary_filter_node" >

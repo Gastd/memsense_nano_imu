@@ -71,7 +71,7 @@ int memsense_nano_imu::Imu::readDataFromImu()
         // Read data from serial port
         if((err = serialcom_receivebyte(&imu_SerialPortConfig, &data_read, TIMEOUT_US)) != SERIALCOM_SUCCESS)
         {
-            ROS_ERROR_STREAM("serialcom_receivebyte failed " << err);
+            // ROS_ERROR_STREAM("serialcom_receivebyte failed " << err);
             continue;
         }
 
@@ -117,7 +117,7 @@ int memsense_nano_imu::Imu::readDataFromImu()
                 else
                 {
                     // Invalid MSG_SIZE, DEV_ID or MSG_ID, reset
-                    ROS_DEBUG("Invalid MSG_SIZE, DEV_ID or MSG_ID: is D_DEV_ID correctly set?");
+                    // ROS_DEBUG("Invalid MSG_SIZE, DEV_ID or MSG_ID: is D_DEV_ID correctly set?");
                     b = 0;
                     s = MEMSENSE_STATES::IMU_SYNC_ST;
                 }
@@ -201,7 +201,7 @@ void memsense_nano_imu::Imu::close()
 
     if((err = serialcom_close(&imu_SerialPortConfig)) != SERIALCOM_SUCCESS)
     {
-        ROS_ERROR_STREAM("serialcom_close failed " << err);
+        // ROS_ERROR_STREAM("serialcom_close failed " << err);
         throwSerialComException(err);
     }
 }
@@ -290,7 +290,7 @@ int memsense_nano_imu::Imu::checksum(unsigned char chksum)
 
     if(sum != chksum)
     {
-        ROS_DEBUG("sum != checksum (%d != %d)\n", sum, chksum);
+        // ROS_DEBUG("sum != checksum (%d != %d)\n", sum, chksum);
         return 0;
     }
     else
